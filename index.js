@@ -1,32 +1,52 @@
-const express = require("express")
-const dotenv = require("dotenv")
-dotenv.config()
-const cookieParser = require("cookie-parser")
+const express=require('express');
+const dotenv=require('dotenv');
+dotenv.config();
+const cookieParser=require('cookie-parser')
+const cors=require('cors')
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
-const { connection } = require("./db");
-const authRouter=require("./routes/authRoutes")
-const authMiddleware=require("./middlewares/authMiddleware")
-const app = express();
-const port= process.env.PORT
+const  connection=require('./db');
+const auth=require('./controllers/auth');
 
-
-app.use(express.json())
+const notes=require('./controllers/notes');
+const app=express();
+app.use(express.json());
 app.use(cookieParser());
-app.use("/auth",authRouter)
+app.use(cors({
+    origin:'http://127.0.0.1:5173',
+    credentials:true
+}));
+app.options("*", cors());
 
 
-app.get("/home", (req, res) => {
-    res.send(" This is home page");
-})
-// app.get("/about",authMiddleware, (req, res) => {  
-//     res.send(" This is about page");
-// })
+//swagger docs
+const options = {
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Notes Blog API',
+        version: '1.0.0',
+      },
+    },
+    server: { url: 'http://localhost:8080' },
+    apis: ['./controllers/*.js'], // files containing annotations as above
+  };
+const openapiSpecification = swaggerJsdoc(options);
 
-app.listen(port, async () => {
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+app.get("/",(req,res)=>{
+    res.send("home page")
+});
+app.use('/auth',auth);
+app.use('/notes',notes);
+
+app.listen(process.env.port,async()=>{
     try {
-        await connection
-        console.log(`server running on this port=> 8080 and db is also connected`)
+        console.log("server start at 3000");
+        connection;
+        console.log("connected to db");
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 })
