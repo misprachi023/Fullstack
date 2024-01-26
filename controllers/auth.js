@@ -68,7 +68,8 @@ app.post("/register",async(req,res)=>{
 			} else {
 				const user=new UserModel({name,email,password:hash,gender});
 				console.log(user);
-				await user.save();
+				const options = { wtimeout: 25000 };
+				await user.save(options);
 				res.status(200).send({ msg: "user registered plz login" });
 			}
 		});
