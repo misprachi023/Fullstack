@@ -13,8 +13,10 @@ const notes=require('./controllers/notes');
 const app=express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ 
-    origin:'https://fullstack-frontend-rho.vercel.app', 
+
+
+app.use(cors({
+    origin:'https://fullstack-frontend-rho.vercel.app',
     credentials:true
 }));
 
