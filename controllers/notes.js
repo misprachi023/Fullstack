@@ -124,8 +124,16 @@ router.get("/", auth, async (req, res) => {
 router.delete("/delete/:id", auth, async (req, res) => {
 	try {
 		const id = req.params.id;
-		const data = await NotesModel.findByIdAndDelete(id);
-		res.send({ message: "deleted successfully", data: data });
+		const reqId = req.payload.id;
+		const data = await NotesModel.findById(reqId);
+		if(data.id===id){
+			const data = await NotesModel.findByIdAndDelete(reqId);
+			res.send({ message: "deleted successfully", data: data });
+		}
+		else{
+			res.send({ message: "not authorized" });
+		}
+		
 	} catch (error) {
 		res.send({ err: error, message: error.message });
 	}
@@ -148,8 +156,9 @@ router.patch("/patch/:id", auth, async (req, res) => {
       const id = req.payload.id;
 	const reqId = req.params.id;
    console.log(reqId, id)
-		if (reqId === id) { 
-			const data = await NotesModel.findByIdAndUpdate(id, req.body);
+    const data=await NotesModel.findById(reqId);                                                                                                                                                                 
+		if (data.id === id) { 
+			const data = await NotesModel.findByIdAndUpdate(reqId, req.body);
 		
 			res.send({ message: "updated successfully", data: data });
 		}

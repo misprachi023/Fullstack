@@ -42,9 +42,17 @@ app.post('/login',async(req,res)=>{
 					const token = jwt.sign({ course: "backend", id: user._id }, process.env.secret_key, {
 						expiresIn: "1h",
 					});
-					res.cookie("token", token);
+					res.cookie("token", token,{
+						sameSite:"none",
+						secure:true,
+						httpOnly:true,
+					});
 					const refreshToken=jwt.sign({course:"backend",id:user._id},process.env.secret_key,{expiresIn:"7h"})
-					res.cookie("refreshToken",refreshToken)
+					res.cookie("refreshToken",refreshToken,{
+						sameSite:"none",
+						secure:true,
+						httpOnly:true
+					})
 					res.send({ msg: "login succesful", token: token,refreshToken:refreshToken });
 				}
 			});
@@ -68,22 +76,12 @@ app.post("/register",async(req,res)=>{
 			} else {
 				const user=new UserModel({name,email,password:hash,gender});
 				console.log(user);
-				await user.save();
+				const options = { wtimeout: 25000 };
+				await user.save(options);
 				res.status(200).send({ msg: "user registered plz login" });
 			}
 		});
-        // const findingUser=await UserModel.findOne({email})
-		// if(findingUser){
-		// 	return res.status(400).send({msg:"user already exists"})
-		// }
-		// else{
-			
-		// }
-		// const hashpassword=bcrypt.hash(password,5)
-		//     const user= new UserModel({
-		// 	name,email,password:hashpassword,gender
-		// })
-		// await user.save();
+       
 	} catch (err) {
 		res.status(400).send({ err: err });
 	}
