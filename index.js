@@ -21,9 +21,8 @@ app.use(cors({
 }));
 
 
-
 //swagger docs
-const options = {
+const options = { 
     definition: {
       openapi: '3.0.0',
       info: {

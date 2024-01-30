@@ -29,8 +29,7 @@ const BlacklistTokenModel = require('../models/blacklistToken');
 app.post('/login',async(req,res)=>{
     const { email, password } = req.body;
 	console.log(req.body)
-	res.header("Access-Control-Allow-Origin", "http://127.0.0.1:5173");
-  res.header("Access-Control-Allow-Credentials", true); 
+	
 	try {
 		const user = await RegisterModel.findOne({ email });
 		console.log(user)
